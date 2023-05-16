@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "Manage Deployments for Webflow",
+    "description": "Add to block publish",
+    "version": "1.0",
+    "icons": {
+      "16": "images/ico.png",
+      "32": "images/ico.png",
+      "48": "images/ico.png",
+      "128": "images/ico.png"
+    },
+    "permissions": [
+        "contextMenus",
+        "storage"
+    ],
+    "content_scripts": [
+      {
+        "js": [
+          "scripts/content.js"
+        ],
+        "css": [
+            "css/index.css"
+        ],
+        "matches": [
+          "https://developer.chrome.com/docs/extensions/*",
+          "https://developer.chrome.com/docs/webstore/*",
+          "https://webflow.com/design"
+        ]
+      }
+    ]
+    
+  }
