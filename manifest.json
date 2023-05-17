@@ -24,7 +24,7 @@
         "matches": [
           "https://developer.chrome.com/docs/extensions/*",
           "https://developer.chrome.com/docs/webstore/*",
-          "https://webflow.com/design"
+          "https://webflow.com/design/*"
         ]
       }
     ]

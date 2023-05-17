@@ -12,13 +12,13 @@
     
     customDomains.forEach(async (customDomain, index) => {
   
-      let linkElement = customDomain.querySelector('.published-page-link');
+      let linkElement = customDomain.querySelector('.kit-checkbox > span');
   
       let childLock = customDomain.querySelector('#lock-' +index);
       let childUnLock = customDomain.querySelector('#unlock-' + index);
     
   
-      let response = await getItem(globalThis.collectionExEvent._id, linkElement.getAttribute("href"));
+      let response = await getItem(globalThis.collectionExEvent._id, linkElement.innerText);
   
       
       childUnLock.classList.remove("f3_hidden");
@@ -27,8 +27,12 @@
       if (response.count > 0)
       {
           let item = response.items[0];
-          if (item.domain == linkElement.getAttribute("href") && !item.allow)
+          if (item.domain == linkElement.innerText && !item.allow)
           {
+            //let publicTarget = document.getElementById('publish-targets');
+            //let btnPublish = publicTarget.querySelector('[data-automation-id="publish-button"]');
+            //btnPublish.classList.add("disabled");
+
             document.getElementById('toggle-' + index).click();
   
             let childKitCheckbox = customDomain.querySelector('.kit-checkbox');
@@ -57,6 +61,12 @@
   
     console.log("appendElements")
       setTimeout(() => {
+
+
+        //set default checkbox in false
+        //document.querySelectorAll('.kit-checkbox:not(.checked)').forEach((item) =>{
+        //  item.click();
+        //});
         
         // Find all elements with class "custom-domains" inside the element with id "publish-targets"
         let parentElements = document.querySelectorAll('#publish-targets .custom-domains');
@@ -147,7 +157,9 @@
                 document.getElementById(toggle.id).addEventListener('change', async function() {
   
                   let parentCustomDomain = this.closest('.custom-domains');
+                  let notKitCheckbox = parentCustomDomain.querySelector('.kit-checkbox.checked');
                   let childKitCheckbox = parentCustomDomain.querySelector('.kit-checkbox');
+                  let childSpriteMain = parentCustomDomain.querySelector('.kit-checkbox .sprite-main');
   
                   let childTextArea = parentCustomDomain.querySelector('#' + textarea.id);
                   let childLock = parentCustomDomain.querySelector('#' + lock.id);
@@ -155,17 +167,22 @@
                   
                   if (this.checked) {
   
-                    childKitCheckbox.classList.add("disabled");
-                    childKitCheckbox.classList.remove("checked");
+                    if (notKitCheckbox)
+                      childSpriteMain.click();
+                    
+                   
+                    //childKitCheckbox.classList.remove("checked");
                     childTextArea.classList.remove("f3_hidden");
                     childLock.classList.remove("f3_hidden");
                     childUnLock.classList.add("f3_hidden");
                     childTextArea.value = "";
+
+                    setTimeout(() => { childKitCheckbox.classList.add("disabled") }, 500);
                  
         
                   } else {
   
-                    let linkElement = parentCustomDomain.querySelector('.published-page-link');
+                    let linkElement = parentCustomDomain.querySelector('.kit-checkbox > span');
                     let toggleElement = parentCustomDomain.querySelector('.f3_switch-checkbox');
   
   
@@ -173,8 +190,8 @@
   
                       "staging" : true,
                       "fields" :{
-                        "name" : linkElement.getAttribute("href") + "-" + Date.now(),
-                        "domain" : linkElement.getAttribute("href"),
+                        "name" : linkElement.innerText + "-" + Date.now(),
+                        "domain" : linkElement.innerText,
                         "user" : globalThis.site.user.email,
                         "allow" : !toggleElement.checked,
                         "comment" : "",
@@ -184,15 +201,18 @@
                       
                     }
   
-                    childKitCheckbox.classList.remove("disabled")
-                    childKitCheckbox.classList.remove("checked");
+                    if (notKitCheckbox)
+                      childSpriteMain.click();
+
+                   childKitCheckbox.classList.remove("disabled")
+                   // childKitCheckbox.classList.remove("checked");
                     childTextArea.classList.add("f3_hidden");
                     childTextArea.value = "";
                     childLock.classList.add("f3_hidden");
                     childUnLock.classList.remove("f3_hidden");
     
   
-                    let response = await createItem(globalThis.collectionExEvent._id, item);
+                    await createItem(globalThis.collectionExEvent._id, item);
                    
   
                   }
@@ -202,16 +222,19 @@
                 document.getElementById(textarea.id).addEventListener('change', async function() {
   
                   let parentCustomDomain = this.closest('.custom-domains');
-                  let linkElement = parentCustomDomain.querySelector('.published-page-link');
+                  let linkElement = parentCustomDomain.querySelector('.kit-checkbox > span');
                   let toggleElement = parentCustomDomain.querySelector('.f3_switch-checkbox');
-  
+
+                  //let publicTarget = document.getElementById('publish-targets');
+                  //let btnPublish = publicTarget.querySelector('[data-automation-id="publish-button"]');
+                  //btnPublish.classList.add("disabled");
                  
                    let item = {
                     "staging" : true,
                       "fields" :{
                        
-                        "name" : linkElement.getAttribute("href") + "-" + Date.now(),
-                        "domain" : linkElement.getAttribute("href"),
+                        "name" : linkElement.innerText + "-" + Date.now(),
+                        "domain" : linkElement.innerText,
                         "user" : globalThis.site.user.email,
                         "allow" : !toggleElement.checked,
                         "comment" : this.value,
@@ -239,7 +262,13 @@
   
   const publishHandler = () => {
    console.log("publishHandler")
-    document.querySelector('[data-automation-id="publish-menu-button"]').addEventListener('click', function() {
+   let publishButton = document.querySelector('[data-automation-id="publish-menu-button"]');
+
+   if (publishButton == undefined || null)
+   {
+    console.log("publishButton", publishButton)
+   }
+   publishButton.addEventListener('click', function() {
         appendElements();
       
     });
@@ -295,6 +324,67 @@
         };
   
         let response = await fetch("https://webflow.com/api/sites/" + getSiteName() + "/collectionPage", requestOptions);
+          
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        let data = await response.json();
+    
+        return data;
+    
+      } catch (error) {
+    
+        console.error('Fetch failed to get data:', error);
+        return [];
+        
+      }
+  
+  
+  }
+
+
+  const createDatabase = async ()=> {
+  
+    try 
+    {
+
+      let payload =
+      {
+        "name": getSiteName() + "'s' Database",
+        "description": getSiteName() + "'s' Database",
+        "collections":[],
+        "assetSize":0,
+        "createdOn":"2023-05-16T20:16:14.377Z",
+        "lastUpdated":"2023-05-16T20:16:14.417Z",
+        "archived":false,
+        "stagingMeta":{},
+        "maxItemRefs":10,
+        "maxFieldLimit":100,
+        "maxItemLimit":20000,
+        "maxEcomItemLimit":2500,
+        "maxLocales":2,
+        "maxCollectionLimit":100
+      }
+
+
+      // The headers for the request
+      let headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("X-XSRF-Token", getCSRFToken())
+  
+      // The data for the new collection
+      let body = JSON.stringify(payload);
+  
+      // The options for the fetch function
+      let requestOptions = {
+          method: 'POST',
+          headers: headers,
+          body: body,
+          redirect: 'follow'
+      };
+  
+      let response = await fetch("https://webflow.com/api/sites/"+ getSiteName() + "/database", requestOptions);
           
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -556,11 +646,19 @@
   const init = async () => {
   
     globalThis.site = await getSite();
+    globalThis.collectionExEvent = null;
+
+    if (globalThis.site.site.database == undefined)
+    {
+
+      let respDatabase = await createDatabase();
+      globalThis.site.site.database = respDatabase._id;
+
+    }
 
     globalThis.collections = await getCollections(globalThis.site.site.database); 
-  
     globalThis.collectionExEvent = globalThis.collections.collections.find(e => e.name == "exEvents");
-  
+    
     if (collectionExEvent == null)
     {
       globalThis.collectionExEvent = await createCollection();
@@ -576,13 +674,13 @@
       await deleteItems(globalThis.collectionExEvent._id, {"itemIds" : ids })
   
     }
+
+
+    setTimeout(publishHandler, 4000);
   
   }
   
-  
-  
   init();
-  setTimeout(publishHandler, 5000);
-  //setInterval(app, 5000);
+
   
   
