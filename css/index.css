@@ -177,3 +177,48 @@
 
 }
 
+.wf-fotvco {
+    -webkit-box-align: center;
+    align-items: center;
+    background-color: var(--Checkbox--background-color);
+    border-color: var(--Checkbox--border-color);
+    border-radius: 2px;
+    border-style: solid;
+    border-width: var(--controls-border-width);
+    color: var(--colors-action-primary-text);
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    outline-offset: 2px;
+    pointer-events: none;
+    position: relative;
+    height: 16px;
+    width: 16px;
+    --Checkbox--border-color: var(--Checkbox--unchecked--border-color);
+    --Checkbox--background-color: var(--Checkbox--unchecked--background-color);
+}
+
+.wf-fotvco > div {
+    display: none;
+}
+
+.wf-1w47aue {
+    -webkit-box-align: center;
+    align-items: center;
+    background-color: var(--Checkbox--background-color);
+    border-color: var(--Checkbox--border-color);
+    border-radius: 2px;
+    border-style: solid;
+    border-width: var(--controls-border-width);
+    color: var(--colors-action-primary-text);
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    outline-offset: 2px;
+    pointer-events: none;
+    position: relative;
+    --Checkbox--border-color: transparent;
+    height: 16px;
+    width: 16px;
+    --Checkbox--background-color: var(--colors-action-primary-background);
+}

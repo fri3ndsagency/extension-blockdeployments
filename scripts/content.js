@@ -3,7 +3,16 @@
 
   // content_script.js
 
-
+  const removeChildElementsById = (parentId) => {
+    const parentElement = document.querySelector(parentId);
+  
+    if (parentElement) {
+      while (parentElement.firstChild) {
+        parentElement.removeChild(parentElement.firstChild);
+      }
+    }
+  }
+  
   const fillElements = async ()=> {
     console.log("fillElements")
   
@@ -12,13 +21,13 @@
     
     customDomains.forEach(async (customDomain, index) => {
   
-      let linkElement = customDomain.querySelector('.kit-checkbox > span');
+      let linkElement = customDomain.querySelector('[data-automation-id="publish-open-new-tab"]');
   
       let childLock = customDomain.querySelector('#lock-' +index);
       let childUnLock = customDomain.querySelector('#unlock-' + index);
     
   
-      let response = await getItem(globalThis.collectionExEvent._id, linkElement.innerText);
+      let response = await getItem(globalThis.collectionExEvent._id, linkElement.href);
   
       
       childUnLock.classList.remove("f3_hidden");
@@ -27,7 +36,7 @@
       if (response.count > 0)
       {
           let item = response.items[0];
-          if (item.domain == linkElement.innerText && !item.allow)
+          if (item.domain == linkElement.href && !item.allow)
           {
             //let publicTarget = document.getElementById('publish-targets');
             //let btnPublish = publicTarget.querySelector('[data-automation-id="publish-button"]');
@@ -35,12 +44,27 @@
 
             document.getElementById('toggle-' + index).click();
   
-            let childKitCheckbox = customDomain.querySelector('.kit-checkbox');
+            let childParentCheckbox = customDomain.querySelector('.wf-1apt7pe');
+            childSideCheckbox = childParentCheckbox.querySelector('div');
+
   
             let childTextArea = customDomain.querySelector('#textarea-' + index);
             
-            childKitCheckbox.classList.add("disabled");
-            childKitCheckbox.classList.remove("checked");
+            childSideCheckbox.classList.add("wf-fotvco");
+            childSideCheckbox.classList.remove("wf-1w47aue");
+
+            const inputCheckbox = childParentCheckbox.querySelector('input');
+            inputCheckbox.checked = false;
+
+          /*  if (childParentCheckbox)
+            {
+              const inputCheckbox = childParentCheckbox.querySelector('input'); // Replace '.my-component' with the appropriate selector
+              const event = new MouseEvent('click', { bubbles: true });
+              inputCheckbox.dispatchEvent(event);
+            }
+           */
+
+            //childKitCheckbox.classList.remove("checked");
             childTextArea.classList.remove("f3_hidden");
             childTextArea.value = item.comment;
   
@@ -157,18 +181,27 @@
                 document.getElementById(toggle.id).addEventListener('change', async function() {
   
                   let parentCustomDomain = this.closest('.custom-domains');
-                  let notKitCheckbox = parentCustomDomain.querySelector('.kit-checkbox.checked');
-                  let childKitCheckbox = parentCustomDomain.querySelector('.kit-checkbox');
-                  let childSpriteMain = parentCustomDomain.querySelector('.kit-checkbox .sprite-main');
+                  let notKitCheckbox = parentCustomDomain.querySelector('.wf-fotvco');
+
+                  //let childKitCheckbox = parentCustomDomain.querySelector('.kit-checkbox');
+                  let childParentCheckbox = parentCustomDomain.querySelector('.wf-1apt7pe');
+                  childSideCheckbox = childParentCheckbox.querySelector('div');
+
+                 // let childSpriteMain = parentCustomDomain.querySelector('.kit-checkbox .sprite-main');
   
                   let childTextArea = parentCustomDomain.querySelector('#' + textarea.id);
                   let childLock = parentCustomDomain.querySelector('#' + lock.id);
                   let childUnLock = parentCustomDomain.querySelector('#' + unLock.id);
+
+                  const inputCheckbox = childParentCheckbox.querySelector('input'); // Replace '.my-component' with the appropriate selector
+                  const event = new MouseEvent('click', { bubbles: true });
+                 
                   
                   if (this.checked) {
   
-                    if (notKitCheckbox)
-                      childSpriteMain.click();
+                    if (!notKitCheckbox)
+                      inputCheckbox.dispatchEvent(event);
+                    //  childSpriteMain.click();
                     
                    
                     //childKitCheckbox.classList.remove("checked");
@@ -177,12 +210,16 @@
                     childUnLock.classList.add("f3_hidden");
                     childTextArea.value = "";
 
-                    setTimeout(() => { childKitCheckbox.classList.add("disabled") }, 500);
-                 
+                  /*  setTimeout(() => { 
+                      childSideCheckbox.classList.add("wf-fotvco"); 
+                      childSideCheckbox.classList.remove("wf-1w47aue"); 
+                     
+                    }, 500);
+                 */
         
                   } else {
   
-                    let linkElement = parentCustomDomain.querySelector('.kit-checkbox > span');
+                    let linkElement = parentCustomDomain.querySelector('[data-automation-id="publish-open-new-tab"]');
                     let toggleElement = parentCustomDomain.querySelector('.f3_switch-checkbox');
   
   
@@ -190,8 +227,8 @@
   
                       "staging" : true,
                       "fields" :{
-                        "name" : linkElement.innerText + "-" + Date.now(),
-                        "domain" : linkElement.innerText,
+                        "name" : linkElement.href + "-" + Date.now(),
+                        "domain" : linkElement.href,
                         "user" : globalThis.site.user.email,
                         "allow" : !toggleElement.checked,
                         "comment" : "",
@@ -202,9 +239,13 @@
                     }
   
                     if (notKitCheckbox)
-                      childSpriteMain.click();
+                      inputCheckbox.dispatchEvent(event);
+                    //childSpriteMain.click();
 
-                   childKitCheckbox.classList.remove("disabled")
+                    //childSideCheckbox.classList.remove("wf-fotvco"); 
+                    //childSideCheckbox.classList.add("wf-1w47aue"); 
+
+                   //childKitCheckbox.classList.remove("disabled")
                    // childKitCheckbox.classList.remove("checked");
                     childTextArea.classList.add("f3_hidden");
                     childTextArea.value = "";
@@ -222,7 +263,7 @@
                 document.getElementById(textarea.id).addEventListener('change', async function() {
   
                   let parentCustomDomain = this.closest('.custom-domains');
-                  let linkElement = parentCustomDomain.querySelector('.kit-checkbox > span');
+                  let linkElement = parentCustomDomain.querySelector('[data-automation-id="publish-open-new-tab"]');
                   let toggleElement = parentCustomDomain.querySelector('.f3_switch-checkbox');
 
                   //let publicTarget = document.getElementById('publish-targets');
@@ -233,8 +274,8 @@
                     "staging" : true,
                       "fields" :{
                        
-                        "name" : linkElement.innerText + "-" + Date.now(),
-                        "domain" : linkElement.innerText,
+                        "name" : linkElement.href + "-" + Date.now(),
+                        "domain" : linkElement.href,
                         "user" : globalThis.site.user.email,
                         "allow" : !toggleElement.checked,
                         "comment" : this.value,
