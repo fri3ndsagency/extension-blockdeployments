@@ -26,8 +26,9 @@
       let childLock = customDomain.querySelector('#lock-' +index);
       let childUnLock = customDomain.querySelector('#unlock-' + index);
     
-  
-      let response = await getItem(globalThis.collectionExEvent._id, linkElement.href);
+      const url = new URL(linkElement.href);
+      const domain = url.hostname;
+      let response = await getItem(globalThis.collectionExEvent._id, domain);
   
       
       childUnLock.classList.remove("f3_hidden");
@@ -36,7 +37,7 @@
       if (response.count > 0)
       {
           let item = response.items[0];
-          if (item.domain == linkElement.href && !item.allow)
+          if (item.domain == domain && !item.allow)
           {
             //let publicTarget = document.getElementById('publish-targets');
             //let btnPublish = publicTarget.querySelector('[data-automation-id="publish-button"]');
@@ -221,14 +222,17 @@
   
                     let linkElement = parentCustomDomain.querySelector('[data-automation-id="publish-open-new-tab"]');
                     let toggleElement = parentCustomDomain.querySelector('.f3_switch-checkbox');
+
+                    const url = new URL(linkElement.href);
+                    const domain = url.hostname;
   
   
                     let item = {
   
                       "staging" : true,
                       "fields" :{
-                        "name" : linkElement.href + "-" + Date.now(),
-                        "domain" : linkElement.href,
+                        "name" : domain + "-" + Date.now(),
+                        "domain" : domain,
                         "user" : globalThis.site.user.email,
                         "allow" : !toggleElement.checked,
                         "comment" : "",
@@ -269,13 +273,16 @@
                   //let publicTarget = document.getElementById('publish-targets');
                   //let btnPublish = publicTarget.querySelector('[data-automation-id="publish-button"]');
                   //btnPublish.classList.add("disabled");
+
+                  const url = new URL(linkElement.href);
+                    const domain = url.hostname;
                  
                    let item = {
                     "staging" : true,
                       "fields" :{
                        
-                        "name" : linkElement.href + "-" + Date.now(),
-                        "domain" : linkElement.href,
+                        "name" : domain + "-" + Date.now(),
+                        "domain" : domain,
                         "user" : globalThis.site.user.email,
                         "allow" : !toggleElement.checked,
                         "comment" : this.value,
@@ -309,10 +316,13 @@
    {
     console.log("publishButton", publishButton)
    }
-   publishButton.addEventListener('click', function() {
-        appendElements();
-      
-    });
+   else
+   {
+    publishButton.addEventListener('click', function() {
+          appendElements();
+        
+      });
+    }
   
   }
   
@@ -717,7 +727,7 @@
     }
 
 
-    setTimeout(publishHandler, 4000);
+    setTimeout(publishHandler, 5000);
   
   }
   
