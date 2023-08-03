@@ -308,23 +308,7 @@
   }
   
   
-  const publishHandler = () => {
-   console.log("publishHandler")
-   let publishButton = document.querySelector('[data-automation-id="publish-menu-button"]');
-
-   if (publishButton == undefined || null)
-   {
-    console.log("publishButton", publishButton)
-   }
-   else
-   {
-    publishButton.addEventListener('click', function() {
-          appendElements();
-        
-      });
-    }
   
-  }
   
   const getCSRFToken = () =>
     document.head.querySelector('meta[name="_csrf"]')?.getAttribute("content") ||
@@ -693,6 +677,43 @@
   
   
   }
+
+
+  const existPublishButton = () => {
+    
+    console.log(">> existPublishButton")
+    let publishButton = document.querySelector('[data-automation-id="publish-menu-button"]');
+ 
+    if (publishButton == undefined || null)
+      return false;
+    
+    return true;
+   
+   }
+
+  const publishHandler = () => {
+
+    console.log(">>> publishHandler")
+    let publishButton = document.querySelector('[data-automation-id="publish-menu-button"]');
+ 
+    if (publishButton == undefined || null)
+    {
+       console.log(">> publishButton")
+    }
+    else
+    {
+     console.log(">>>> publishButton <<<<")
+    
+     setTimeout(() => {   
+
+          console.log(">>>> publishButton - event <<<<")
+          publishButton.onclick = appendElements;
+      
+      }, 4000);
+      
+     }
+   
+   }
   
   const init = async () => {
   
@@ -727,8 +748,15 @@
     }
 
 
-    setTimeout(publishHandler, 5000);
-  
+    const intervalId = setInterval(publishHandler, 10000); 
+
+    const checkConditionInterval = setInterval(() => {
+      if (existPublishButton()) {
+        clearInterval(intervalId); 
+        clearInterval(checkConditionInterval); 
+      }
+    }, 10000);
+      
   }
   
   init();
