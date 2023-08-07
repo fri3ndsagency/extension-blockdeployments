@@ -222,3 +222,12 @@
     width: 16px;
     --Checkbox--background-color: var(--colors-action-primary-background);
 }
+
+.loader.f3_spinner{
+
+    opacity: 1!important;
+    display: block!important;
+   
+}
+
+

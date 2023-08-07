@@ -9,10 +9,7 @@
       "48": "images/ico.png",
       "128": "images/ico.png"
     },
-    "permissions": [
-        "contextMenus",
-        "storage"
-    ],
+   
     "content_scripts": [
       {
         "js": [
@@ -22,8 +19,7 @@
             "css/index-min.css"
         ],
         "matches": [
-          "https://developer.chrome.com/docs/extensions/*",
-          "https://developer.chrome.com/docs/webstore/*",
+        
           "https://webflow.com/design/*"
         ]
       }

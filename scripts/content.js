@@ -84,10 +84,15 @@
   const appendElements = ()  => {
   
   
-    console.log("appendElements")
+    console.log("appendElements");
       setTimeout(() => {
 
-
+        let loader = document.querySelector('#publish-targets .loader');
+        if (loader != null)
+        {
+          loader.classList.remove("f3_spinner");
+         
+        }
         //set default checkbox in false
         //document.querySelectorAll('.kit-checkbox:not(.checked)').forEach((item) =>{
         //  item.click();
@@ -691,6 +696,18 @@
    
    }
 
+   const existLoader = () => {
+    
+    console.log(">> existLoader")
+    let loader = document.querySelector('#publish-targets .loader');
+ 
+    if (loader == undefined || null)
+      return false;
+    
+    return true;
+   
+   }
+
   const publishHandler = () => {
 
     console.log(">>> publishHandler")
@@ -706,13 +723,40 @@
     
      setTimeout(() => {   
 
-          console.log(">>>> publishButton - event <<<<")
-          publishButton.onclick = appendElements;
+        console.log(">>>> publishButton - event <<<<")
+
+        publishButton.onclick = appendElements;
+        
+        //remove loader
+        let loader = document.querySelector('#publish-targets .loader');
+        if (loader != null)
+        {
+          loader.classList.remove("f3_spinner");
+          appendElements();
+        }
       
       }, 4000);
       
      }
    
+   }
+
+   const loaderHandler = () => {
+
+    console.log(">>> loaderHandler")
+    let loader = document.querySelector('#publish-targets .loader');
+ 
+    if (loader == undefined || null)
+    {
+       console.log(">> publishButton")
+    }
+    else
+    {
+     console.log(">>>> publishButton <<<<")
+    
+     loader.classList.add("f3_spinner");
+      
+     }
    }
   
   const init = async () => {
@@ -748,14 +792,25 @@
     }
 
 
+    const intervalLoaderId = setInterval(loaderHandler, 500); 
+
     const intervalId = setInterval(publishHandler, 10000); 
 
     const checkConditionInterval = setInterval(() => {
       if (existPublishButton()) {
+
         clearInterval(intervalId); 
         clearInterval(checkConditionInterval); 
       }
     }, 10000);
+
+    const checkLoaderInterval = setInterval(() => {
+      if (existLoader()) {
+
+        clearInterval(intervalLoaderId); 
+        clearInterval(checkLoaderInterval); 
+      }
+    }, 500);
       
   }
   
